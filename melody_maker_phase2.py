@@ -17,6 +17,9 @@ import random
 import copy
 import math
 from music.muser import Muser
+import matplotlib.pyplot as plt
+import numpy as np
+from datetime import datetime
 
 class MelodyMakerPhase2:
     def __init__(self, population_size=20, mutation_rate=0.1, crossover_rate=0.7, crossover_type='single', mutation_strategy='both'):
@@ -641,16 +644,220 @@ def print_test_results(results):
     print(f"Best average fitness: {best_avg['test_name']} ({best_avg['avg_fitness']})")
     print(f"Most diverse: {most_diverse['test_name']} ({most_diverse['final_diversity']})")
 
+def create_fitness_comparison_plot(results):
+    """Create bar chart comparing fitness metrics across tests"""
+    test_names = [result['test_name'] for result in results]
+    best_fitness = [result['best_fitness'] for result in results]
+    avg_fitness = [result['avg_fitness'] for result in results]
+    
+    x = np.arange(len(test_names))
+    width = 0.35
+    
+    fig, ax = plt.subplots(figsize=(12, 8))
+    bars1 = ax.bar(x - width/2, best_fitness, width, label='Best Fitness', color='#2E86AB', alpha=0.8)
+    bars2 = ax.bar(x + width/2, avg_fitness, width, label='Average Fitness', color='#A23B72', alpha=0.8)
+    
+    ax.set_xlabel('Test Configuration', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Fitness Score', fontsize=12, fontweight='bold')
+    ax.set_title('Genetic Algorithm Performance Comparison\nFitness Scores by Crossover Type and Mutation Strategy', 
+                 fontsize=14, fontweight='bold', pad=20)
+    ax.set_xticks(x)
+    ax.set_xticklabels(test_names, rotation=45, ha='right')
+    ax.legend(fontsize=11)
+    ax.grid(axis='y', alpha=0.3)
+    
+    # Add value labels on bars
+    for bar in bars1:
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., height + 0.5,
+                f'{height}', ha='center', va='bottom', fontweight='bold')
+    
+    for bar in bars2:
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., height + 0.5,
+                f'{height}', ha='center', va='bottom', fontweight='bold')
+    
+    plt.tight_layout()
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"fitness_comparison_{timestamp}.png"
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    print(f"Fitness comparison plot saved as: {filename}")
+    plt.close()
+    return filename
+
+def create_diversity_plot(results):
+    """Create bar chart for diversity comparison"""
+    test_names = [result['test_name'] for result in results]
+    diversity = [result['final_diversity'] for result in results]
+    
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
+    # Color bars based on crossover type
+    colors = ['#F18F01' if 'Uniform' in name else '#C73E1D' for name in test_names]
+    bars = ax.bar(test_names, diversity, color=colors, alpha=0.8, edgecolor='black', linewidth=1)
+    
+    ax.set_xlabel('Test Configuration', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Population Diversity (Final Generation)', fontsize=12, fontweight='bold')
+    ax.set_title('Population Diversity by Configuration\nHigher Values Indicate More Genetic Variation', 
+                 fontsize=14, fontweight='bold', pad=20)
+    ax.grid(axis='y', alpha=0.3)
+    
+    # Add value labels on bars
+    for bar, value in zip(bars, diversity):
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., height + 0.1,
+                f'{value}', ha='center', va='bottom', fontweight='bold')
+    
+    # Rotate x-axis labels
+    plt.xticks(rotation=45, ha='right')
+    
+    # Add legend for colors
+    uniform_patch = plt.Rectangle((0,0),1,1, facecolor='#F18F01', alpha=0.8, label='Uniform Crossover')
+    single_patch = plt.Rectangle((0,0),1,1, facecolor='#C73E1D', alpha=0.8, label='Single-point Crossover')
+    ax.legend(handles=[uniform_patch, single_patch], fontsize=11)
+    
+    plt.tight_layout()
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"diversity_comparison_{timestamp}.png"
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    print(f"Diversity comparison plot saved as: {filename}")
+    plt.close()
+    return filename
+
+def create_combined_results_plot(results):
+    """Create comprehensive dashboard with multiple metrics"""
+    fig = plt.figure(figsize=(16, 12))
+    
+    # Create a 2x2 grid
+    gs = fig.add_gridspec(3, 2, hspace=0.3, wspace=0.3)
+    
+    test_names = [result['test_name'] for result in results]
+    best_fitness = [result['best_fitness'] for result in results]
+    avg_fitness = [result['avg_fitness'] for result in results]
+    diversity = [result['final_diversity'] for result in results]
+    
+    # 1. Fitness comparison (top left)
+    ax1 = fig.add_subplot(gs[0, 0])
+    x = np.arange(len(test_names))
+    width = 0.35
+    ax1.bar(x - width/2, best_fitness, width, label='Best', color='#2E86AB', alpha=0.8)
+    ax1.bar(x + width/2, avg_fitness, width, label='Average', color='#A23B72', alpha=0.8)
+    ax1.set_title('Fitness Scores Comparison', fontweight='bold')
+    ax1.set_ylabel('Fitness Score')
+    ax1.set_xticks(x)
+    ax1.set_xticklabels([name.replace(' + ', '\\n') for name in test_names], fontsize=9)
+    ax1.legend()
+    ax1.grid(axis='y', alpha=0.3)
+    
+    # 2. Diversity comparison (top right)
+    ax2 = fig.add_subplot(gs[0, 1])
+    colors = ['#F18F01' if 'Uniform' in name else '#C73E1D' for name in test_names]
+    ax2.bar(range(len(test_names)), diversity, color=colors, alpha=0.8)
+    ax2.set_title('Population Diversity', fontweight='bold')
+    ax2.set_ylabel('Diversity Score')
+    ax2.set_xticks(range(len(test_names)))
+    ax2.set_xticklabels([name.replace(' + ', '\\n') for name in test_names], fontsize=9)
+    ax2.grid(axis='y', alpha=0.3)
+    
+    # 3. Fitness vs Diversity scatter plot (middle left)
+    ax3 = fig.add_subplot(gs[1, 0])
+    scatter_colors = ['#F18F01' if 'Uniform' in name else '#C73E1D' for name in test_names]
+    scatter = ax3.scatter(diversity, best_fitness, c=scatter_colors, s=100, alpha=0.8, edgecolors='black')
+    for i, name in enumerate(test_names):
+        ax3.annotate(name.replace(' + ', '\\n'), (diversity[i], best_fitness[i]), 
+                    xytext=(5, 5), textcoords='offset points', fontsize=8)
+    ax3.set_xlabel('Population Diversity')
+    ax3.set_ylabel('Best Fitness')
+    ax3.set_title('Fitness vs Diversity Trade-off', fontweight='bold')
+    ax3.grid(alpha=0.3)
+    
+    # 4. Performance ranking (middle right)
+    ax4 = fig.add_subplot(gs[1, 1])
+    # Calculate combined score (weighted average)
+    combined_scores = [0.5 * best + 0.3 * avg + 0.2 * div for best, avg, div in zip(best_fitness, avg_fitness, diversity)]
+    sorted_indices = sorted(range(len(combined_scores)), key=lambda i: combined_scores[i], reverse=True)
+    sorted_names = [test_names[i] for i in sorted_indices]
+    sorted_scores = [combined_scores[i] for i in sorted_indices]
+    
+    bars = ax4.barh(range(len(sorted_names)), sorted_scores, color='#4ECDC4', alpha=0.8)
+    ax4.set_yticks(range(len(sorted_names)))
+    ax4.set_yticklabels([name.replace(' + ', ' + ') for name in sorted_names])
+    ax4.set_xlabel('Combined Performance Score')
+    ax4.set_title('Overall Performance Ranking\\n(50% Best + 30% Avg + 20% Diversity)', fontweight='bold')
+    ax4.grid(axis='x', alpha=0.3)
+    
+    # Add score labels
+    for i, (bar, score) in enumerate(zip(bars, sorted_scores)):
+        ax4.text(score + 0.5, bar.get_y() + bar.get_height()/2, 
+                f'{score:.1f}', va='center', fontweight='bold')
+    
+    # 5. Results table (bottom, spanning both columns)
+    ax5 = fig.add_subplot(gs[2, :])
+    ax5.axis('off')
+    
+    # Create table data
+    table_data = []
+    headers = ['Test Configuration', 'Best Fitness', 'Avg Fitness', 'Diversity', 'Rank']
+    for i, (idx, result) in enumerate(zip(sorted_indices, [results[i] for i in sorted_indices])):
+        table_data.append([
+            result['test_name'],
+            f"{result['best_fitness']:.1f}",
+            f"{result['avg_fitness']:.1f}",
+            f"{result['final_diversity']:.1f}",
+            f"#{i+1}"
+        ])
+    
+    table = ax5.table(cellText=table_data, colLabels=headers, cellLoc='center', loc='center')
+    table.auto_set_font_size(False)
+    table.set_fontsize(11)
+    table.scale(1.2, 2)
+    
+    # Style the table
+    for i in range(len(headers)):
+        table[(0, i)].set_facecolor('#E8E8E8')
+        table[(0, i)].set_text_props(weight='bold')
+    
+    plt.suptitle('Genetic Algorithm Performance Analysis Dashboard\\nCrossover Types vs Mutation Strategies', 
+                 fontsize=16, fontweight='bold', y=0.95)
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"combined_results_dashboard_{timestamp}.png"
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    print(f"Combined results dashboard saved as: {filename}")
+    plt.close()
+    return filename
+
+def create_all_plots(results):
+    """Generate all visualization plots and return filenames"""
+    print("\\n=== GENERATING VISUALIZATION PLOTS ===")
+    
+    plot_files = []
+    
+    try:
+        # Create individual plots
+        plot_files.append(create_fitness_comparison_plot(results))
+        plot_files.append(create_diversity_plot(results))
+        plot_files.append(create_combined_results_plot(results))
+        
+        print(f"\\nSuccessfully generated {len(plot_files)} visualization plots")
+        return plot_files
+        
+    except Exception as e:
+        print(f"Error generating plots: {e}")
+        return plot_files
+
 def main():
     print("=== Melody Maker - Genetic Algorithm Phase 2 ===")
     print("Phase 2: Automated fitness with musical heuristics")
     print("Features: Chord progressions, key consistency, advanced mutations\n")
     
-    # Ask if user wants to run full test suite
-    run_test_suite = input("Run full test suite (5 scenarios)? (y/n, default y): ").lower()
-    run_test_suite = run_test_suite in ['y', 'yes', '']
+    # Ask what mode to run
+    print("Choose mode:")
+    print("1. Full test suite (5 scenarios with plots)")
+    print("2. Simple run (just evolve and generate song.wav)")
+    mode = input("Enter choice (1/2, default 1): ").strip() or "1"
     
-    if run_test_suite:
+    if mode == "1":
         # GA Parameters for comparison
         population_size = int(input("Population size (default 15): ") or "15")
         mutation_rate = float(input("Mutation rate 0.0-1.0 (default 0.12): ") or "0.12")
@@ -671,6 +878,89 @@ def main():
         
         # Print results table
         print_test_results(results)
+        
+        # Generate and save visualization plots
+        plot_files = create_all_plots(results)
+        
+        if plot_files:
+            print(f"\nGenerated {len(plot_files)} visualization files:")
+            for plot_file in plot_files:
+                print(f"  • {plot_file}")
+        
+        print(f"\n Generated {len(results)} audio files for best compositions")
+        print("All results, plots, and audio files saved in current directory")
+    
+    elif mode == "2":
+        # Simple mode - just evolve and generate song.wav
+        print("\n=== SIMPLE MODE: Evolve and Generate Song ===")
+        
+        # GA Parameters
+        print("  Recommended settings for good compositions:")
+        print("  Population: 20-50, Generations: 30-100")
+        print("  Larger values = better evolution but longer runtime\n")
+        
+        population_size = int(input("Population size (default 30): ") or "30")
+        mutation_rate = float(input("Mutation rate 0.0-1.0 (default 0.12): ") or "0.12")
+        crossover_rate = float(input("Crossover rate 0.0-1.0 (default 0.8): ") or "0.8")
+        crossover_type = input("Crossover type (single/uniform, default uniform): ") or "uniform"
+        mutation_strategy = input("Mutation strategy (pitch/rhythm/both, default both): ") or "both"
+        generations = int(input("Number of generations (default 50): ") or "50")
+        
+        print(f"\nStarting evolution with parameters:")
+        print(f"  Population: {population_size}")
+        print(f"  Mutation rate: {mutation_rate}")
+        print(f"  Crossover rate: {crossover_rate}")
+        print(f"  Crossover type: {crossover_type}")
+        print(f"  Mutation strategy: {mutation_strategy}")
+        print(f"  Generations: {generations}")
+        
+        # Initialize and run GA
+        ga = MelodyMakerPhase2(population_size, mutation_rate, crossover_rate, crossover_type, mutation_strategy)
+        
+        print("\nInitializing population...")
+        ga.initialize_population()
+        
+        best_overall = None
+        best_fitness = -1
+        
+        print(f"\nEvolving for {generations} generations...")
+        for gen in range(generations):
+            try:
+                best_individual = ga.run_generation()
+                
+                if best_individual[1] > best_fitness:
+                    best_fitness = best_individual[1]
+                    best_overall = best_individual[0]
+                
+                # Show progress every 10 generations (or every 5 for shorter runs)
+                progress_interval = 10 if generations > 20 else 5
+                if (gen + 1) % progress_interval == 0 or gen == 0:
+                    print(f"Generation {gen + 1}/{generations}: Best fitness = {best_fitness:.1f}")
+                    
+            except KeyboardInterrupt:
+                print(f"\nEvolution interrupted at generation {gen + 1}")
+                break
+            except Exception as e:
+                print(f"Error in generation {gen}: {e}")
+                continue
+        
+        # Generate final composition
+        if best_overall:
+            print(f"\nEvolution complete!")
+            print(f"Final best fitness: {best_fitness:.1f}/100")
+            print(f"Generating final composition...")
+            
+            ga.generate_music(best_overall, "song.wav")
+            print("Final composition saved as: song.wav")
+            
+            print(f"\nComposition details:")
+            print(f"  Melody track: {len(best_overall[0])} notes")
+            print(f"  Bass track: {len(best_overall[1])} notes")
+            print(f"  Final diversity: {ga.diversity_history[-1]:.2f}" if ga.diversity_history else "")
+        else:
+            print("No valid composition generated")
+        
+        print("\nSimple mode completed!")
     
     else:
         # Original single run mode
