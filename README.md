@@ -104,7 +104,7 @@ Number of generations (default 50): 75
 Evolution complete!
 Final best fitness: 78.5/100
 Generating final composition...
-<� Final composition saved as: song.wav
+Final composition saved as: song.wav
 
 Composition details:
   Melody track: 42 notes
