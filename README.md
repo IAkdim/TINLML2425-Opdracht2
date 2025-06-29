@@ -1,70 +1,169 @@
-# Melody Maker - Genetic Algorithm for Musical Composition
+# Music Maker - Genetic Algorithm Music Composer
 
-Een genetisch algoritme systeem voor het genereren van muziekcomposities met geavanceerde heuristieken en automatische fitness evaluatie.
+Een intelligente muziekcompositor die genetische algoritmen gebruikt om automatisch melodieën en baslijnten te genereren.
 
-## 6 Gebruik en Deployment
+## Installatie
 
-### 6.1 Installatie
+### Vereisten
+- Python 3.7+
+- pip package manager
 
-#### Vereisten
-- Python 3.12+
-- pip (Python package manager)
-- Audio playback capability (voor het afspelen van gegenereerde muziek)
+### Setup
 
-#### Installatiestappen
+1. **Clone of download het project:**
+   ```bash
+   cd music-maker
+   ```
 
-1. **Clone het project**
+2. **Installeer dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Maak music directory aan (automatisch bij eerste run):**
+   ```bash
+   mkdir -p music
+   ```
+
+## Gebruik & Deployment
+
+### Fase 1: Handmatige Fitness Evaluatie
+
+Voor beginners en experimentele compositie met handmatige feedback:
+
 ```bash
-git clone https://github.com/IAkdim/TINLML2425-Opdracht2.git
-cd TINLML2425-Opdracht2
+python phase1.py
 ```
 
-2. **Installeer dependencies met pip**
+**Interactieve parameters:**
+- Populatie grootte (standaard: 10)
+- Mutatie kans (standaard: 0.15)
+- Crossover kans (standaard: 0.7)
+- Aantal generaties (standaard: 3)
+
+### Fase 2: Geautomatiseerde Fitness met Heuristieken
+
+Voor geavanceerde compositie met muzikale intelligentie:
+
 ```bash
-pip install -r requirements.txt
+python phase2.py
 ```
 
-De belangrijkste dependencies zijn:
-- `matplotlib` - Voor het genereren van visualisaties en plots
-- Standaard Python libraries: `random`, `copy`, `math`, `subprocess`
+**Opties:**
+1. **Enkele run** - Experimenteer met verschillende strategieën
+2. **Vergelijking experimenten** - Test alle combinaties automatisch
 
-3. **Verificeer installatie**
+## Command-line Parameters
+
+### Fase 1 Parameters
+- **Populatie grootte**: Aantal individuen per generatie (5-50)
+- **Mutatie kans**: Waarschijnlijkheid van mutatie (0.05-0.3)
+- **Crossover kans**: Waarschijnlijkheid van recombinatie (0.5-0.9)
+- **Generaties**: Aantal evolutie cycli (1-20)
+
+### Fase 2 Parameters
+- **Crossover type**: 
+  - `single` - Traditionele single-point crossover
+  - `uniform` - Uniform crossover voor meer variatie
+- **Mutatie strategie**:
+  - `pitch` - Alleen toonhoogte mutatie
+  - `rhythm` - Alleen ritme mutatie  
+  - `both` - Combinatie van beide (aanbevolen)
+
+## Voorbeeldworkflow: Snel een song.wav genereren
+
+### Snelle Start (3 minuten)
 ```bash
-python melody_maker_phase2.py
+# Automatische compositie met standaard instellingen
+python phase2.py
+# Kies: 1 (enkele run)
+# Druk Enter voor alle standaard waarden
+# Resultaat: beste_compositie_uniform_both.wav
 ```
 
-### 6.2 Gebruik
-
-Het systeem biedt verschillende uitvoeringsmodi:
-
-#### Command-line Opties
-
-**Hoofdscript uitvoeren:**
+### Geavanceerde Workflow (10 minuten)
 ```bash
-python melody_maker_phase2.py
+# Fase 1: Experimenteer met handmatige feedback
+python phase1.py
+# Voer in: 15, 0.2, 0.8, 5
+# Evalueer 3-5 composities handmatig
+# Resultaat: finale_compositie.wav
+
+# Fase 2: Verfijn met heuristieken
+python phase2.py
+# Kies: 2 (vergelijking experimenten)
+# Bekijk alle strategieën automatisch
+# Resultaat: 5 verschillende .wav bestanden
 ```
 
-**Beschikbare modi:**
-1. **Full Test Suite** - Uitgebreide research modus met 5 testscenario's
-2. **Simple Run** - Eenvoudige compositie generatie
+### Optimale Instellingen
+Voor beste resultaten:
+- **Populatie**: 15-20 individuen
+- **Mutatie**: 0.12-0.15
+- **Crossover**: 0.7-0.8
+- **Strategie**: uniform + both
+- **Generaties**: 8-12
 
-#### Invoerparameters
+## Output Files
 
-**Algemene GA Parameters:**
-- `population_size`: Populatiegrootte (aanbevolen: 20-50)
-- `mutation_rate`: Mutatiesnelheid (0.0-1.0, standaard: 0.12)
-- `crossover_rate`: Crossover snelheid (0.0-1.0, standaard: 0.8)
-- `crossover_type`: Type crossover (`single` of `uniform`)
-- `mutation_strategy`: Mutatiestrategie (`pitch`, `rhythm`, of `both`)
-- `generations`: Aantal generaties (aanbevolen: 30-100)
+### Gegenereerde Bestanden
+- `song.wav` - Huidige compositie
+- `finale_compositie.wav` - Beste resultaat Fase 1
+- `beste_compositie_[strategie].wav` - Beste resultaat Fase 2
+- `temp_evaluatie.wav` - Tijdelijke evaluatie bestanden
 
-#### Output Bestanden
+### Muzikale Eigenschappen
+- **Formaat**: WAV audio
+- **Tempo**: 130 BPM
+- **Toonsoort**: C majeur
+- **Structuur**: Melodie + Baslijn
+- **Duur**: 15-60 seconden (afhankelijk van compositie)
 
-**Muziekbestanden:**
-- `song.wav` - Finale compositie (Simple Run modus)
-- `phase2_final_best.wav` - Beste overall compositie
+## Configuratie
 
-**Visualisaties (alleen Full Test Suite):**
-- `fitness_comparison_[timestamp].png` - Fitness vergelijking
-- `diversity_comparison_[timestamp].png` - Populatie diversiteit
-- `combined_results_dashboard_[timestamp].png` - Uitgebreid dashboard
+### Building Blocks
+Het systeem gebruikt voorgedefinieerde muzikale patronen:
+- **intro**: Openingsthema
+- **verse**: Hoofdmelodie
+- **chorus**: Refrein
+- **bridge**: Overgang
+- **outro**: Afsluiting
+- **bass**: Baslijn patronen
+
+### Fitness Criteria (Fase 2)
+Het algoritme evalueert composities op:
+1. **Lengte structuur** (25 punten) - Ideale maat indeling
+2. **Akkoordprogressies** (25 punten) - Muzikale harmonie
+3. **Melodische beweging** (20 punten) - Natuurlijke intervallen
+4. **Ritme diversiteit** (15 punten) - Variatie in nootwaarden
+5. **Muzikale afsluiting** (15 punten) - Correcte tonica eindigen
+
+## Troubleshooting
+
+### Veelvoorkomende Problemen
+- **ModuleNotFoundError**: Voer `pip install -r requirements.txt` uit
+- **Geen audio**: Controleer of `music/` directory bestaat
+- **Lage fitness scores**: Probeer meer generaties of lagere mutatie
+- **Te weinig variatie**: Verhoog mutatie kans of gebruik uniform crossover
+
+### Performance Tips
+- Gebruik populatie 10-20 voor snelle experimenten
+- Gebruik populatie 20-50 voor kwaliteitsresultaten
+- Meer generaties = betere convergentie maar langzamer
+- Fase 2 is sneller dan Fase 1 (geen handmatige input)
+
+## Technische Details
+
+### Dependencies
+- `tomita` - Muzieksynthese engine
+- `numpy` - Numerieke berekeningen
+- `matplotlib` - Optionele visualisatie
+- `click` - Command-line interface
+
+### Architectuur
+- `muser.py` - Audio generatie engine
+- `phase1.py` - Handmatige fitness GA
+- `phase2.py` - Geautomatiseerde fitness GA
+- `requirements.txt` - Python dependencies
+
+Voor meer informatie over de algoritmen, zie de code commentaar in de fase bestanden.
