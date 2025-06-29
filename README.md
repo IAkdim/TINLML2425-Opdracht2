@@ -8,7 +8,7 @@ Een genetisch algoritme systeem voor het genereren van muziekcomposities met gea
 
 #### Vereisten
 - Python 3.12+
-- uv (Python package manager)
+- pip (Python package manager)
 - Audio playback capability (voor het afspelen van gegenereerde muziek)
 
 #### Installatiestappen
@@ -16,12 +16,12 @@ Een genetisch algoritme systeem voor het genereren van muziekcomposities met gea
 1. **Clone het project**
 ```bash
 git clone https://github.com/IAkdim/TINLML2425-Opdracht2.git
-cd INLML2425-Opdracht2
+cd TINLML2425-Opdracht2
 ```
 
-2. **Installeer dependencies met uv**
+2. **Installeer dependencies met pip**
 ```bash
-uv sync
+pip install -r requirements.txt
 ```
 
 De belangrijkste dependencies zijn:
@@ -47,7 +47,6 @@ python melody_maker_phase2.py
 **Beschikbare modi:**
 1. **Full Test Suite** - Uitgebreide research modus met 5 testscenario's
 2. **Simple Run** - Eenvoudige compositie generatie
-3. **Interactive Mode** - Stap-voor-stap evolutie controle
 
 #### Invoerparameters
 
