@@ -63,7 +63,6 @@ python melody_maker_phase2.py
 
 **Muziekbestanden:**
 - `song.wav` - Finale compositie (Simple Run modus)
-- `test_X_[crossover]_[mutation]_best.wav` - Beste composities per test
 - `phase2_final_best.wav` - Beste overall compositie
 
 **Visualisaties (alleen Full Test Suite):**
