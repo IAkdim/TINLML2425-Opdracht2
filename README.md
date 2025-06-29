@@ -15,8 +15,8 @@ Een genetisch algoritme systeem voor het genereren van muziekcomposities met gea
 
 1. **Clone het project**
 ```bash
-git clone <repository-url>
-cd music-maker
+git clone https://github.com/IAkdim/TINLML2425-Opdracht2.git
+cd INLML2425-Opdracht2
 ```
 
 2. **Installeer dependencies met uv**
